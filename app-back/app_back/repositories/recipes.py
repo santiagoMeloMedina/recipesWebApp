@@ -42,9 +42,15 @@ def _get_ingredients_by_recipe(recipes: List[recipes_model.Recipe]):
     return _parse_ingredients_by_recipe(db_config.fetch(recipe_ingredients_query))
 
 
-def get_paged_recipes(starting: int, limit: int) -> List[recipes_model.Recipe]:
-    recipies_query = "SELECT * FROM %s LIMIT %s, %s" % (
+def get_paged_recipes(
+    starting: int, limit: int, title: str = None
+) -> List[recipes_model.Recipe]:
+    title_condition = ""
+    if title:
+        title_condition = f"WHERE title LIKE '{title}%'"
+    recipies_query = "SELECT * FROM %s %s LIMIT %s, %s" % (
         db_const.RECIPIES_TABLE_NAME,
+        title_condition,
         starting,
         limit,
     )
@@ -76,7 +82,6 @@ def get_paged_recipes_by_ingredient(
         starting,
         limit,
     )
-    print(recipies_query, flush=True)
     recipes = _parse_recipes(db_config.fetch(recipies_query))
     ingredients_by_recipe = _get_ingredients_by_recipe(recipes)
 

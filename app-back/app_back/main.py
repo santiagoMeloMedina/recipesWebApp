@@ -19,8 +19,14 @@ def get_paged_recipes():
     result = {"code": 500, "body": {}}
     try:
         pager_params = (request.args.get("starting", 0), request.args.get("limit", 0))
+        title = request.args.get("name", None)
         result.update(
-            {"code": 200, "body": recipes_service.get_paged_recipes(pager_params)}
+            {
+                "code": 200,
+                "body": recipes_service.get_paged_recipes(
+                    pager_params, title=title.lower()
+                ),
+            }
         )
     except Exception as e:
         logging.error(e)
