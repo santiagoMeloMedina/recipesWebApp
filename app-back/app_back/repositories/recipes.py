@@ -59,3 +59,32 @@ def get_paged_recipes(starting: int, limit: int) -> List[recipes_model.Recipe]:
             )
 
     return recipes.values()
+
+
+def get_paged_recipes_by_ingredient(
+    starting: int, limit: int, ingredient: str
+) -> List[recipes_model.Recipe]:
+    recipies_query = """
+        SELECT recp.* FROM %s recp 
+        INNER JOIN %s rel 
+            ON rel.recipe_id=recp.id 
+        WHERE rel.ingredient_id='%s' 
+        LIMIT %s, %s""" % (
+        db_const.RECIPIES_TABLE_NAME,
+        db_const.RELATION_TABLE_NAME,
+        ingredient,
+        starting,
+        limit,
+    )
+    print(recipies_query, flush=True)
+    recipes = _parse_recipes(db_config.fetch(recipies_query))
+    ingredients_by_recipe = _get_ingredients_by_recipe(recipes)
+
+    for recipe_id in ingredients_by_recipe:
+        ingredients = ingredients_by_recipe.get(recipe_id)
+        for ingredient in ingredients:
+            recipes.get(recipe_id).ingredients.append(
+                recipes_model.Ingredient.parse_obj(ingredient.dict())
+            )
+
+    return recipes.values()
