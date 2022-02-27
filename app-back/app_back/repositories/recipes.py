@@ -47,7 +47,7 @@ def get_paged_recipes(
 ) -> List[recipes_model.Recipe]:
     title_condition = ""
     if title:
-        title_condition = f"WHERE title LIKE '{title}%'"
+        title_condition = f"WHERE title LIKE '{title.lower()}%'"
     recipies_query = "SELECT * FROM %s %s LIMIT %s, %s" % (
         db_const.RECIPIES_TABLE_NAME,
         title_condition,

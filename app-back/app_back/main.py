@@ -23,9 +23,7 @@ def get_paged_recipes():
         result.update(
             {
                 "code": 200,
-                "body": recipes_service.get_paged_recipes(
-                    pager_params, title=title.lower()
-                ),
+                "body": recipes_service.get_paged_recipes(pager_params, title=title),
             }
         )
     except Exception as e:
