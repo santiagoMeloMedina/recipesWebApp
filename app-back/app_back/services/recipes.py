@@ -13,3 +13,9 @@ def get_paged_recipes(
         )
 
     return [recipe.dict() for recipe in recipes]
+
+def get_paged_ingredients(
+    pager_params: Tuple[int, int]
+) -> List[Dict[str, Any]]:
+    ings = recipes_repo.get_paged_ingredients(*pager_params)
+    return [ing.dict() for ing in ings]

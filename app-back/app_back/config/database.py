@@ -1,17 +1,22 @@
 import sqlite3
 from typing import Any
-from models import recipes
 from constants import database as db_const
+from threading import Lock
 
-_connection = sqlite3.connect(db_const.DATABASE_PATH, check_same_thread=False)
-_connection.row_factory = lambda cursor, row: {
-    column[0]: row[index] for index, column in enumerate(cursor.description)
-}
+lock = Lock()
 
-_cursor = _connection.cursor()
+def connect_and_get():
+    _connection = sqlite3.connect(db_const.DATABASE_PATH, check_same_thread=False)
+    _connection.row_factory = lambda cursor, row: {
+        column[0]: row[index] for index, column in enumerate(cursor.description)
+    }
+
+    return _connection.cursor(), _connection
 
 
 def fetch(query: str) -> Any:
+    _cursor, _conn = connect_and_get()
     _cursor.execute(query)
     rows = _cursor.fetchall()
+    _conn.close()
     return rows

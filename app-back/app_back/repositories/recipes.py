@@ -12,6 +12,14 @@ def _parse_recipes(raw_data: List[Dict[str, Any]]) -> Dict[str, recipes_model.Re
 
     return recipes
 
+def _parse_ingredients(raw_data: List[Dict[str, Any]]) -> Dict[str, recipes_model.Ingredient]:
+    ings = {}
+    for data in raw_data:
+        ing = recipes_model.Ingredient.parse_obj(data)
+        ings[ing.id] = ing
+
+    return ings
+
 
 def _parse_ingredients_by_recipe(
     raw_data: List[Dict[str, Any]]
@@ -93,3 +101,15 @@ def get_paged_recipes_by_ingredient(
             )
 
     return recipes.values()
+
+def get_paged_ingredients(
+    starting: int, limit: int
+) -> List[recipes_model.Ingredient]:
+    ings_query = "SELECT * FROM %s LIMIT %s, %s" % (
+        db_const.INGREDIENTS_TABLE_NAME,
+        starting,
+        limit,
+    )
+    ings = _parse_ingredients(db_config.fetch(ings_query))
+
+    return ings.values()

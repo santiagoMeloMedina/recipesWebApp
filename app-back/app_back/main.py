@@ -30,6 +30,21 @@ def get_paged_recipes():
         logging.error(e)
     return response.get_custom_response(**result)
 
+@app.route("/ingredients", methods=["GET"])
+def get_paged_ingredients():
+    result = {"code": 500, "body": {}}
+    try:
+        pager_params = (request.args.get("starting", 0), request.args.get("limit", 0))
+        result.update(
+            {
+                "code": 200,
+                "body": recipes_service.get_paged_ingredients(pager_params),
+            }
+        )
+    except Exception as e:
+        logging.error(e)
+    return response.get_custom_response(**result)
+
 
 @app.route("/recipes/<ingredient>", methods=["GET"])
 def get_paged_recipes_by_ingredient(ingredient: str):
